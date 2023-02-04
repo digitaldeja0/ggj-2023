@@ -64,6 +64,7 @@ const cubebb = new THREE.Box3().setFromObject(cube);
 const helper = new THREE.Box3Helper(cubebb, 0xffff00);
 scene.add(helper);
 
+// Add Star Box 
 const starCube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshBasicMaterial({
@@ -73,6 +74,7 @@ const starCube = new THREE.Mesh(
 );
 scene.add(starCube);
 
+
 const starCubebb = new THREE.Box3().setFromObject(starCube);
 const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00);
 scene.add(helper2);
@@ -81,6 +83,7 @@ const loader = new GLTFLoader();
 let can;
 let star;
 let itemSize = 15;
+let girl;
 
 loader.load(
   "can-demo.glb",
@@ -115,6 +118,20 @@ loader.load(
   }
 );
 
+loader.load(
+  "tree-sm.glb",
+  function (gltf) {
+    girl = gltf.scene
+    console.log(gltf.scene)
+scene.add(gltf.scene)
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
+
+
 // Cannon Starter
 
 const world = new CANNON.World({
@@ -140,9 +157,21 @@ const GROUP1 = 1;
 const GROUP2 = 2;
 const GROUP3 = 4;
 
+const groundTexture = new THREE.TextureLoader().load("ground2.jpg");
+groundTexture.repeat.x = 25;
+groundTexture.repeat.y = 25;
+groundTexture.wrapS = THREE.RepeatWrapping;
+groundTexture.wrapT = THREE.RepeatWrapping;
+
+const platformTetxure= new THREE.TextureLoader().load("cloth.png");
+platformTetxure.repeat.x = 2;
+platformTetxure.repeat.y = 1;
+platformTetxure.wrapS = THREE.RepeatWrapping;
+platformTetxure.wrapT = THREE.RepeatWrapping;
+
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(50, 50),
-  new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide })
+  new THREE.MeshBasicMaterial({ map:groundTexture })
 );
 plane.rotation.x = Math.PI / 2;
 scene.add(plane);
@@ -197,7 +226,7 @@ const platformMovement = (i) => {
 };
 
 const dancingStar = (i, j)=>{
-  i.rotation.y +=0.01
+  i.rotation.y +=0.09
 
   j.position.x -=0.05 * (gameSpeed -0.5)
   if(j.position.x <=-10.05){
@@ -210,7 +239,7 @@ const dancingStar = (i, j)=>{
 const platform = new THREE.Mesh(
   new THREE.BoxGeometry(5, 0.5, 5),
   new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
+    map:platformTetxure
   })
 );
 scene.add(platform);
@@ -250,17 +279,14 @@ function animate() {
     timerDom.innerHTML = Math.floor(60 - elapsedTime);
   }
   requestAnimationFrame(animate);
+
+  if(girl!=undefined){
+    girl.position.x+=0.005*gameSpeed
+  }
   platformMovement(pbody);
   if(star !=undefined){
     dancingStar(star, body1)
   }
-
-  // pbody.position.x -=0.05 * gameSpeed
-  // if(pbody.position.x <=-10.05){
-  //   console.log("true")
-  //   pbody.position.x = 20
-  // }
-
 
   smash(cubebb, starCubebb);
   if (can != undefined) {
