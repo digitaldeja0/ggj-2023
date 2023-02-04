@@ -157,13 +157,13 @@ const GROUP1 = 1;
 const GROUP2 = 2;
 const GROUP3 = 4;
 
-const groundTexture = new THREE.TextureLoader().load("ground2.jpg");
+const groundTexture = new THREE.TextureLoader().load("/ground2.jpg");
 groundTexture.repeat.x = 25;
 groundTexture.repeat.y = 25;
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
 
-const platformTetxure= new THREE.TextureLoader().load("cloth.png");
+const platformTetxure= new THREE.TextureLoader().load("/cloth.png");
 platformTetxure.repeat.x = 2;
 platformTetxure.repeat.y = 1;
 platformTetxure.wrapS = THREE.RepeatWrapping;
