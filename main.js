@@ -2,21 +2,28 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+// Sizes 
+
+const size ={
+  width:window.innerWidth, 
+  height:window.innerHeight
+}
+
 // Canvas
 const canvas = document.querySelector("#canvas");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = size.width
+canvas.height = size.height
 
 // Scene, Camere, Renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   59,
-  canvas.width / canvas.height,
+  size.width / size.height,
   0.1,
   100
 );
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-renderer.setSize(canvas.width, canvas.height);
+renderer.setSize(size.width, size.height);
 document.body.appendChild(renderer.domElement);
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
