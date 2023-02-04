@@ -4,13 +4,12 @@ import * as dat from "lil-gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
-import CannonDebugger from 'cannon-es-debugger'
+import CannonDebugger from "cannon-es-debugger";
 import { Material } from "three";
 
-// Score and Timer 
-const timerDom = document.querySelector("#timer")
-const scoreDom = document.querySelector("#score")
-
+// Score and Timer
+const timerDom = document.querySelector("#timer");
+const scoreDom = document.querySelector("#score");
 
 // Sizes
 
@@ -37,7 +36,7 @@ renderer.setSize(size.width, size.height);
 document.body.appendChild(renderer.domElement);
 // Controls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.update()
+controls.update();
 // Light
 const light1 = new THREE.AmbientLight(0x404040); // soft white light
 scene.add(light1);
@@ -46,43 +45,42 @@ light2.position.set(0, 2, 6);
 scene.add(light2);
 
 // Update Camera
-camera.position.z = 10;
-camera.position.y = 5;
-camera.rotation.x = -25.50;
-
+camera.rotation.x = -0.2;
+camera.position.y = 3;
+camera.position.z = 11;
 
 // Add Cube
 
-const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
-  color: 0xFCC2FC,
-  wireframe: true,
-}));
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({
+    color: 0xfcc2fc,
+    wireframe: true,
+  })
+);
 scene.add(cube);
 
-const cubebb = new THREE.Box3().setFromObject(cube)
-const helper = new THREE.Box3Helper(cubebb, 0xffff00 );
-scene.add( helper );
+const cubebb = new THREE.Box3().setFromObject(cube);
+const helper = new THREE.Box3Helper(cubebb, 0xffff00);
+scene.add(helper);
 
-
-
-
-
-const starCube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-  wireframe: true,
-}));
+const starCube = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true,
+  })
+);
 scene.add(starCube);
 
-const starCubebb = new THREE.Box3().setFromObject(starCube)
-const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00 );
-scene.add( helper2 );
-
-
+const starCubebb = new THREE.Box3().setFromObject(starCube);
+const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00);
+scene.add(helper2);
 
 const loader = new GLTFLoader();
 let can;
 let star;
-let itemSize = 15
+let itemSize = 15;
 
 loader.load(
   "can-demo.glb",
@@ -117,129 +115,158 @@ loader.load(
   }
 );
 
-
-
-
 // Cannon Starter
 
 const world = new CANNON.World({
   gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
 });
-world.defaultContactMaterial.contactEquationStiffness = 1e6
-world.defaultContactMaterial.contactEquationRelaxation = 10
-world.solver.iterations = 5
+world.defaultContactMaterial.contactEquationStiffness = 1e6;
+world.defaultContactMaterial.contactEquationRelaxation = 10;
+world.solver.iterations = 5;
 
-
-const cannonDebugger = new CannonDebugger (scene, world, {
-  color:"#AEE2FF",
+const cannonDebugger = new CannonDebugger(scene, world, {
+  color: "#AEE2FF",
   scale: 1,
-})
+});
 
 const groundBody = new CANNON.Body({
   type: CANNON.Body.STATIC,
   shape: new CANNON.Plane(),
-})
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0) // make it face up
-world.addBody(groundBody)
+});
+groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0); // make it face up
+world.addBody(groundBody);
 
-const GROUP1 = 1
-const GROUP2 = 2
-const GROUP3 = 4
+const GROUP1 = 1;
+const GROUP2 = 2;
+const GROUP3 = 4;
 
-
-const plane = new THREE.Mesh(new THREE.PlaneGeometry( 25, 25 ),new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} ) );
+const plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(50, 50),
+  new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide })
+);
 plane.rotation.x = Math.PI / 2;
-scene.add( plane );
+scene.add(plane);
 
-const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
 const body = new CANNON.Body({
   mass: 1,
   collisionFilterGroup: GROUP2, // Put the box in group 2
   collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
-})
-body.addShape(shape)
-body.position.set(-1, 0, 0)
-body.velocity.set(0, 0, 0)
-body.linearDamping = 0
-world.addBody(body)
+});
+body.addShape(shape);
+body.position.set(-1, 0, 0);
+body.velocity.set(0, 0, 0);
+body.linearDamping = 0;
+world.addBody(body);
 
-const shape1 = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+const shape1 = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
 const body1 = new CANNON.Body({
   mass: 1,
   collisionFilterGroup: GROUP3, // Put the cylinder in group 3
   collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
-})
-body1.addShape(shape1)
-body1.position.set(1, 0, 0)
-body1.velocity.set(-5, 0, 0)
-body1.linearDamping = 0
-world.addBody(body1)
+});
+body1.addShape(shape1);
+body1.position.set(1, 0, 0);
+body1.velocity.set(-5, 0, 0);
+body1.linearDamping = 0;
+world.addBody(body1);
 
-const shape3 = new CANNON.Box(new CANNON.Vec3(3, 0.5, 2))
+const shape3 = new CANNON.Box(new CANNON.Vec3(3, 0.5, 2));
 const pbody = new CANNON.Body({
-  type:CANNON.Body.STATIC,
+  type: CANNON.Body.STATIC,
   mass: 0,
   collisionFilterGroup: GROUP1, // Put the cylinder in group 3
-  collisionFilterMask: GROUP2 | GROUP3 // It can only collide with group 1 (the sphere)
-})
+  collisionFilterMask: GROUP2 | GROUP3, // It can only collide with group 1 (the sphere)
+});
 
 // Add Platform
-pbody.addShape(shape3)
-pbody.position.set(0, 2.5, 0)
+pbody.addShape(shape3);
+pbody.position.set(0, 2.5, 0);
 // pbody.velocity.set(-5, 0, 0)
 // pbody.linearDamping = 0
-world.addBody(pbody)
+world.addBody(pbody);
 
-const platform= new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-}));
-scene.add(platform);
-platform.position.y=2.5
-
-// Create Score and Time Keeper
-let score= 0
-scoreDom.innerHTML = score
-let time= 60
-timerDom.innerHTML = time
-
-
-// Check Collision
-const smash = (item1, item2)=>{
-  if(item1.intersectsBox (item2)==true){
-    cube.material.wireframe=false
-    score ++
-    scoreDom.innerHTML = score
-
-  }else{
-    cube.material.wireframe=true
+const platformMovement = (i) => {
+  i.position.x -=0.05 * gameSpeed
+  if(i.position.x <=-10.05){
+    console.log("true")
+    i.position.x = 20
   }
+
+
+};
+
+const dancingStar = (i, j)=>{
+  i.rotation.y +=0.01
+
+  j.position.x -=0.05 * (gameSpeed -0.5)
+  if(j.position.x <=-10.05){
+    console.log("true")
+    j.position.x = 30
+  }
+
 }
 
+const platform = new THREE.Mesh(
+  new THREE.BoxGeometry(5, 0.5, 5),
+  new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+  })
+);
+scene.add(platform);
+platform.position.y = 2.5;
+
+// Create Score and Time Keeper
+let score = 0;
+scoreDom.innerHTML = score;
+let time = 60;
+timerDom.innerHTML = time;
+
+// Check Collision
+const smash = (item1, item2) => {
+  if (item1.intersectsBox(item2) == true) {
+    cube.material.wireframe = false;
+    score++;
+    scoreDom.innerHTML = score;
+  } else {
+    cube.material.wireframe = true;
+  }
+};
 
 // Animation Loop
 let clock = new THREE.Clock();
 let delta = 0;
-let currentTime = 0
+let currentTime = 0;
+let gameSpeed = 2
 
 function animate() {
   delta = clock.getDelta();
   const elapsedTime = clock.getElapsedTime();
-  let timePassed = clock.startTime
-  currentTime = Math.floor(60-elapsedTime)
-  if (currentTime <=0){
-    timerDom.innerHTML = "Game Over"
-  }else{
-    timerDom.innerHTML = Math.floor(60-elapsedTime)
+  let timePassed = clock.startTime;
+  currentTime = Math.floor(60 - elapsedTime);
+  if (currentTime <= 0) {
+    timerDom.innerHTML = "Game Over";
+  } else {
+    timerDom.innerHTML = Math.floor(60 - elapsedTime);
+  }
+  requestAnimationFrame(animate);
+  platformMovement(pbody);
+  if(star !=undefined){
+    dancingStar(star, body1)
   }
 
-  requestAnimationFrame(animate);
+  // pbody.position.x -=0.05 * gameSpeed
+  // if(pbody.position.x <=-10.05){
+  //   console.log("true")
+  //   pbody.position.x = 20
+  // }
 
-  smash(cubebb, starCubebb)
+
+  smash(cubebb, starCubebb);
   if (can != undefined) {
     can.position.copy(body.position);
-    can.position.y = body.position.y
+    can.position.y = body.position.y;
     // Make condition that if button is not pressed then can is on y.0
-
   }
   if (star != undefined) {
     star.position.copy(body1.position);
@@ -247,23 +274,24 @@ function animate() {
   // Cannon Game
   world.fixedStep();
   // world.step(1 / 60, deltaTime, 3);
-  cannonDebugger.update()
-  cube.position.copy(body.position)
-  cube.quaternion.copy(body.quaternion)
-  starCube.position.copy(body1.position)
-  starCube.quaternion.copy(body1.quaternion)
-  plane.position.copy(groundBody.position)
-  plane.quaternion.copy(groundBody.quaternion)
-  cubebb.copy( cube.geometry.boundingBox ).applyMatrix4( cube.matrixWorld );
-  starCubebb.copy( starCube.geometry.boundingBox ).applyMatrix4( starCube.matrixWorld );
-  platform.position.copy(pbody.position)
-  platform.quaternion.copy(pbody.quaternion)
+  cannonDebugger.update();
+  cube.position.copy(body.position);
+  cube.quaternion.copy(body.quaternion);
+  starCube.position.copy(body1.position);
+  starCube.quaternion.copy(body1.quaternion);
+  plane.position.copy(groundBody.position);
+  plane.quaternion.copy(groundBody.quaternion);
+  cubebb.copy(cube.geometry.boundingBox).applyMatrix4(cube.matrixWorld);
+  starCubebb
+    .copy(starCube.geometry.boundingBox)
+    .applyMatrix4(starCube.matrixWorld);
+  platform.position.copy(pbody.position);
+  platform.quaternion.copy(pbody.quaternion);
   // Cannon Game End
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(window.devicePixelRatio);
   controls.update();
   renderer.render(scene, camera);
-
 }
 
 animate();
@@ -275,23 +303,23 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-window.addEventListener("keydown", (e)=>{
-  if(e.key==" "){
-    body.position.y+=4
+window.addEventListener("keydown", (e) => {
+  if (e.key == " ") {
+    body.position.y += 4;
     // can.position.y+=3
   }
-  if(e.key=="ArrowRight"){
-    body.position.x+=1
+  if (e.key == "ArrowRight") {
+    body.position.x += 1;
     // can.position.y+=3
   }
-  if(e.key=="ArrowLeft"){
-    body.position.x-=1
+  if (e.key == "ArrowLeft") {
+    body.position.x -= 1;
     // can.position.y+=3
   }
-  if(e.key=="ArrowDown"){
+  if (e.key == "ArrowDown") {
     // body.position.x-=0.01
   }
-})
+});
 
 // GUI
 const gui = new dat.GUI();

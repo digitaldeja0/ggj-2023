@@ -22,3 +22,9 @@ module.exports = {
     darkTheme: "night",
   }
 }
+
+// controls.maxPolarAngle = Math.PI * 0.49;
+// controls.minPolarAngle = Math.PI * 0.4;
+// controls.maxDistance = Math.PI * 0.1;
+// controls.minDistance = Math.PI * 5;
+// controls.maxZoom = Math.PI * 5;
