@@ -154,7 +154,7 @@ const body = new CANNON.Body({
 })
 body.addShape(shape)
 body.position.set(-1, 0, 0)
-body.velocity.set(-5, 0, 0)
+body.velocity.set(1, 0, 0)
 body.linearDamping = 0
 world.addBody(body)
 
@@ -170,8 +170,28 @@ body1.velocity.set(-5, 0, 0)
 body1.linearDamping = 0
 world.addBody(body1)
 
-console.log(body1.aabb)
+const shape3 = new CANNON.Box(new CANNON.Vec3(3, 0.5, 2))
+const pbody = new CANNON.Body({
+  mass: 0,
+  collisionFilterGroup: GROUP1, // Put the cylinder in group 3
+  collisionFilterMask: GROUP2 | GROUP3 // It can only collide with group 1 (the sphere)
+})
 
+// Add Platform
+pbody.addShape(shape3)
+pbody.position.set(0, 2.5, 0)
+pbody.velocity.set(-5, 0, 0)
+pbody.linearDamping = 0
+world.addBody(pbody)
+
+const platform= new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
+}));
+scene.add(platform);
+platform.position.y=2.5
+
+
+// Check Collision
 const smash = (item1, item2)=>{
   if(item1.intersectsBox (item2)==true){
     console.log("True")
@@ -196,12 +216,12 @@ function animate() {
   smash(cubebb, starCubebb)
   if (can != undefined) {
     can.position.copy(body.position);
-    can.position.y = 0
+    can.position.y = body.position.y
+    // Make condition that if button is not pressed then can is on y.0
 
   }
   if (star != undefined) {
     star.position.copy(body1.position);
-    star.position.y = 0
   }
   // Cannon Game
   world.fixedStep();
@@ -215,6 +235,8 @@ function animate() {
   plane.quaternion.copy(groundBody.quaternion)
   cubebb.copy( cube.geometry.boundingBox ).applyMatrix4( cube.matrixWorld );
   starCubebb.copy( starCube.geometry.boundingBox ).applyMatrix4( starCube.matrixWorld );
+  platform.position.copy(pbody.position)
+  platform.quaternion.copy(pbody.quaternion)
   // Cannon Game End
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -234,11 +256,20 @@ window.addEventListener("resize", () => {
 
 window.addEventListener("keydown", (e)=>{
   console.log(e.key)
-  if(e.key=="ArrowUp"){
-    body.position.x+=0.01
+  if(e.key==" "){
+    body.position.y+=4
+    // can.position.y+=3
+  }
+  if(e.key=="ArrowRight"){
+    body.position.x+=1
+    // can.position.y+=3
+  }
+  if(e.key=="ArrowLeft"){
+    body.position.x-=1
+    // can.position.y+=3
   }
   if(e.key=="ArrowDown"){
-    body.position.x-=0.01
+    // body.position.x-=0.01
   }
 })
 
