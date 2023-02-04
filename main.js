@@ -7,6 +7,11 @@ import * as CANNON from "cannon-es";
 import CannonDebugger from 'cannon-es-debugger'
 import { Material } from "three";
 
+// Score and Timer 
+const timerDom = document.querySelector("#timer")
+const scoreDom = document.querySelector("#score")
+
+
 // Sizes
 
 const size = {
@@ -154,7 +159,7 @@ const body = new CANNON.Body({
 })
 body.addShape(shape)
 body.position.set(-1, 0, 0)
-body.velocity.set(1, 0, 0)
+body.velocity.set(0, 0, 0)
 body.linearDamping = 0
 world.addBody(body)
 
@@ -172,6 +177,7 @@ world.addBody(body1)
 
 const shape3 = new CANNON.Box(new CANNON.Vec3(3, 0.5, 2))
 const pbody = new CANNON.Body({
+  type:CANNON.Body.STATIC,
   mass: 0,
   collisionFilterGroup: GROUP1, // Put the cylinder in group 3
   collisionFilterMask: GROUP2 | GROUP3 // It can only collide with group 1 (the sphere)
@@ -180,8 +186,8 @@ const pbody = new CANNON.Body({
 // Add Platform
 pbody.addShape(shape3)
 pbody.position.set(0, 2.5, 0)
-pbody.velocity.set(-5, 0, 0)
-pbody.linearDamping = 0
+// pbody.velocity.set(-5, 0, 0)
+// pbody.linearDamping = 0
 world.addBody(pbody)
 
 const platform= new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), new THREE.MeshBasicMaterial({
@@ -190,27 +196,42 @@ const platform= new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 5), new THREE.MeshB
 scene.add(platform);
 platform.position.y=2.5
 
+// Create Score and Time Keeper
+let score= 0
+scoreDom.innerHTML = score
+let time= 60
+timerDom.innerHTML = time
+
 
 // Check Collision
 const smash = (item1, item2)=>{
   if(item1.intersectsBox (item2)==true){
-    console.log("True")
     cube.material.wireframe=false
-    
-    console.log(cube)
+    score ++
+    scoreDom.innerHTML = score
+
   }else{
     cube.material.wireframe=true
-    console.log("false")
   }
 }
 
 
 // Animation Loop
-let startTimeStamp = Date.now();
+let clock = new THREE.Clock();
+let delta = 0;
+let currentTime = 0
 
 function animate() {
-  const endTimeStamp = Date.now();
-  const elapsedTime = endTimeStamp - startTimeStamp;
+  delta = clock.getDelta();
+  const elapsedTime = clock.getElapsedTime();
+  let timePassed = clock.startTime
+  currentTime = Math.floor(60-elapsedTime)
+  if (currentTime <=0){
+    timerDom.innerHTML = "Game Over"
+  }else{
+    timerDom.innerHTML = Math.floor(60-elapsedTime)
+  }
+
   requestAnimationFrame(animate);
 
   smash(cubebb, starCubebb)
@@ -255,7 +276,6 @@ window.addEventListener("resize", () => {
 });
 
 window.addEventListener("keydown", (e)=>{
-  console.log(e.key)
   if(e.key==" "){
     body.position.y+=4
     // can.position.y+=3
