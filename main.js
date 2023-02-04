@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
 import CannonDebugger from 'cannon-es-debugger'
+import { Material } from "three";
 
 // Sizes
 
@@ -53,11 +54,25 @@ const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicM
 }));
 scene.add(cube);
 
+const cubebb = new THREE.Box3().setFromObject(cube)
+const helper = new THREE.Box3Helper(cubebb, 0xffff00 );
+scene.add( helper );
+
+
+
+
+
 const starCube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
   color: 0x00ff00,
   wireframe: true,
 }));
 scene.add(starCube);
+
+const starCubebb = new THREE.Box3().setFromObject(starCube)
+const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00 );
+scene.add( helper2 );
+
+
 
 const loader = new GLTFLoader();
 let can;
@@ -101,6 +116,7 @@ loader.load(
 
 
 // Cannon Starter
+
 const world = new CANNON.World({
   gravity: new CANNON.Vec3(0, -9.82, 0), // m/s²
 });
@@ -121,6 +137,10 @@ const groundBody = new CANNON.Body({
 groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0) // make it face up
 world.addBody(groundBody)
 
+const GROUP1 = 1
+const GROUP2 = 2
+const GROUP3 = 4
+
 
 const plane = new THREE.Mesh(new THREE.PlaneGeometry( 25, 25 ),new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} ) );
 plane.rotation.x = Math.PI / 2;
@@ -129,9 +149,11 @@ scene.add( plane );
 const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
 const body = new CANNON.Body({
   mass: 1,
+  collisionFilterGroup: GROUP2, // Put the box in group 2
+  collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
 })
 body.addShape(shape)
-body.position.set(-2, 0, 0)
+body.position.set(-1, 0, 0)
 body.velocity.set(-5, 0, 0)
 body.linearDamping = 0
 world.addBody(body)
@@ -139,13 +161,28 @@ world.addBody(body)
 const shape1 = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
 const body1 = new CANNON.Body({
   mass: 1,
+  collisionFilterGroup: GROUP3, // Put the cylinder in group 3
+  collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
 })
 body1.addShape(shape1)
-body.position.set(2, 0, 0)
-body.velocity.set(-5, 0, 0)
-body.linearDamping = 0
+body1.position.set(1, 0, 0)
+body1.velocity.set(-5, 0, 0)
+body1.linearDamping = 0
 world.addBody(body1)
 
+console.log(body1.aabb)
+
+const smash = (item1, item2)=>{
+  if(item1.intersectsBox (item2)==true){
+    console.log("True")
+    cube.material.wireframe=false
+    
+    console.log(cube)
+  }else{
+    cube.material.wireframe=true
+    console.log("false")
+  }
+}
 
 
 // Animation Loop
@@ -155,9 +192,12 @@ function animate() {
   const endTimeStamp = Date.now();
   const elapsedTime = endTimeStamp - startTimeStamp;
   requestAnimationFrame(animate);
+
+  smash(cubebb, starCubebb)
   if (can != undefined) {
     can.position.copy(body.position);
     can.position.y = 0
+
   }
   if (star != undefined) {
     star.position.copy(body1.position);
@@ -173,6 +213,8 @@ function animate() {
   starCube.quaternion.copy(body1.quaternion)
   plane.position.copy(groundBody.position)
   plane.quaternion.copy(groundBody.quaternion)
+  cubebb.copy( cube.geometry.boundingBox ).applyMatrix4( cube.matrixWorld );
+  starCubebb.copy( starCube.geometry.boundingBox ).applyMatrix4( starCube.matrixWorld );
   // Cannon Game End
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(window.devicePixelRatio);
