@@ -64,7 +64,7 @@ const cubebb = new THREE.Box3().setFromObject(cube);
 const helper = new THREE.Box3Helper(cubebb, 0xffff00);
 scene.add(helper);
 
-// Add Star Box 
+// Add Star Box
 const starCube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshBasicMaterial({
@@ -73,7 +73,6 @@ const starCube = new THREE.Mesh(
   })
 );
 scene.add(starCube);
-
 
 const starCubebb = new THREE.Box3().setFromObject(starCube);
 const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00);
@@ -121,16 +120,14 @@ loader.load(
 loader.load(
   "tree-sm.glb",
   function (gltf) {
-    girl = gltf.scene
-    console.log(gltf.scene)
-scene.add(gltf.scene)
+    girl = gltf.scene;
+    scene.add(gltf.scene);
   },
   undefined,
   function (error) {
     console.error(error);
   }
 );
-
 
 // Cannon Starter
 
@@ -163,7 +160,7 @@ groundTexture.repeat.y = 25;
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
 
-const platformTetxure= new THREE.TextureLoader().load("/cloth.png");
+const platformTetxure = new THREE.TextureLoader().load("/cloth.png");
 platformTetxure.repeat.x = 2;
 platformTetxure.repeat.y = 1;
 platformTetxure.wrapS = THREE.RepeatWrapping;
@@ -171,7 +168,7 @@ platformTetxure.wrapT = THREE.RepeatWrapping;
 
 const plane = new THREE.Mesh(
   new THREE.PlaneGeometry(50, 50),
-  new THREE.MeshBasicMaterial({ map:groundTexture })
+  new THREE.MeshBasicMaterial({ map: groundTexture })
 );
 plane.rotation.x = Math.PI / 2;
 scene.add(plane);
@@ -216,30 +213,25 @@ pbody.position.set(0, 2.5, 0);
 world.addBody(pbody);
 
 const platformMovement = (i) => {
-  i.position.x -=0.05 * gameSpeed
-  if(i.position.x <=-10.05){
-    console.log("true")
-    i.position.x = 20
+  i.position.x -= 0.05 * gameSpeed;
+  if (i.position.x <= -10.05) {
+    i.position.x = 20;
   }
-
-
 };
 
-const dancingStar = (i, j)=>{
-  i.rotation.y +=0.09
+const dancingStar = (i, j) => {
+  i.rotation.y += 0.09;
 
-  j.position.x -=0.05 * (gameSpeed -0.5)
-  if(j.position.x <=-10.05){
-    console.log("true")
-    j.position.x = 30
+  j.position.x -= 0.05 * (gameSpeed - 0.5);
+  if (j.position.x <= -10.05) {
+    j.position.x = 30;
   }
-
-}
+};
 
 const platform = new THREE.Mesh(
   new THREE.BoxGeometry(5, 0.5, 5),
   new THREE.MeshBasicMaterial({
-    map:platformTetxure
+    color: "#ffffff",
   })
 );
 scene.add(platform);
@@ -266,7 +258,7 @@ const smash = (item1, item2) => {
 let clock = new THREE.Clock();
 let delta = 0;
 let currentTime = 0;
-let gameSpeed = 2
+let gameSpeed = 2;
 
 function animate() {
   delta = clock.getDelta();
@@ -280,12 +272,12 @@ function animate() {
   }
   requestAnimationFrame(animate);
 
-  if(girl!=undefined){
-    girl.position.x+=0.005*gameSpeed
+  if (girl != undefined) {
+    girl.position.x += 0.005 * gameSpeed;
   }
   platformMovement(pbody);
-  if(star !=undefined){
-    dancingStar(star, body1)
+  if (star != undefined) {
+    dancingStar(star, body1);
   }
 
   smash(cubebb, starCubebb);
@@ -346,6 +338,37 @@ window.addEventListener("keydown", (e) => {
     // body.position.x-=0.01
   }
 });
+
+let soundon = document.querySelector("#soundOn");
+let soundItem;
+
+window.addEventListener("load", (e) => {
+  const listener = new THREE.AudioListener();
+  camera.add(listener);
+  const sound = new THREE.Audio(listener);
+  const audioLoader = new THREE.AudioLoader();
+  soundon.addEventListener("click", () => {
+    console.log("true")
+    audioLoader.load("/music.wav", function (buffer) {
+      sound.setBuffer(buffer);
+      sound.setLoop(true);
+      sound.setVolume(0.2);
+      if(sound.isPlaying){
+        sound.stop()
+        soundon.innerHTML="Sound On 🎶"
+      }else{
+        sound.play()
+        soundon.innerHTML="Sound Off 🚫"
+      }
+      
+    });
+
+
+
+  });
+});
+
+
 
 // GUI
 const gui = new dat.GUI();
