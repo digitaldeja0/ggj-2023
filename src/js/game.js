@@ -6,10 +6,10 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
 import CannonDebugger from "cannon-es-debugger";
 import { Material } from "three";
-import Light from "../game/Lights";
-import camera from "../game/Camera";
-import Cube from "../game/Cube";
-import BoundingBox from "../game/BoundingBox";
+import Light from "../../game/Lights";
+import camera from "../../game/Camera";
+import Cube from "../../game/Cube";
+import BoundingBox from "../../game/BoundingBox";
 
 // Setup Game 
 
