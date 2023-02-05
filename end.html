@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="public/favicon.ico" type="image/x-icon" />
+    <title>Rootbeer Riot Runner</title>
+  </head>
+  <body>
+    <!-- Header Start -->
+    <div class="navbar bg-neutral text-neutral-content fixed top-0 header">
+      <a href="/index.html" class="btn btn-ghost normal-case text-xl">Rootbeer Riot Runner</a>
+      <a id="soundOnEnd" class="btn btn-accent mx-1 hover:cursor-pointer">
+        Music On 🎶</a
+      >
+      <a href="/help.html" class="btn btn-secondary mx-1 hover:cursor-pointer">
+        Rules/Help 💁🏽‍♂️</a
+      >
+
+    </div>
+    <!-- Header End -->
+    <div class="gameOutro">
+      <div class="">
+        <div class="w-40 ">
+          <img src="/logo.png" />
+        </div>
+      </div>
+      <p class="max-w-sm  text-center my-2 font-medium text-2xl"> Game Over</p>
+      <h1 class="score text-5xl mb-5">Your Score is <span id="yourscore" class="font-semibold text-accent">100</span></h1>
+      <a href="/play.html" class="btn gameIntroBtn">Play Again 🌻</a>
+      <h3 class="my-4 font-semibold">Credits</h3>
+      <p>Alex - Sound and Music Direction/ Curation </p>
+      <p>David - Creative Direction, Game Designer, 2D Art</p>
+      <p>Deja - Frontend Development, 3D Art</p>
+      <p>Tim - Frontend Development,  Game Design</p>
+      <p>Special Thanks to the Buffalo Game Space Members</p>
+      
+    </div>
+
+    <!-- Footer Start -->
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content fixed bottom-0 left-0">
+      <div>
+        <p class="text-base text-accent">Developed By Alex, David, Deja, and Tim </p>
+        </p><a class="link text-sm" href="https://www.buffalogamespace.com/">Created at The Buffalo Game Space For Global Game Jam 2023</a></p>
+      </div>
+    </footer>
+    <!-- Footer End -->
+    <script type="module" src="/end.js"></script>
+  </body>
+</html>

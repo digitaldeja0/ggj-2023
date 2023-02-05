@@ -10,6 +10,21 @@ import Light from "./game/Lights";
 import camera from "./game/Camera";
 import Cube from "./game/Cube";
 import BoundingBox from "./game/BoundingBox";
+
+// Setup Game 
+
+const startBtn = document.querySelector(".startGameBtn");
+const containerContainer = document.querySelector(".containerContainer");
+
+const gameIntroBtn = document.querySelector(".gameIntroBtn");
+const gameIntro = document.querySelector(".gameIntro");
+
+// gameIntroBtn.addEventListener("click", () => {
+//   gameIntro.style.display = "none";
+// });
+
+// Loader Const
+const loaderIcon = document.querySelector(".loaderDiv");
 // Score and Timer
 const timerDom = document.querySelector("#timer");
 const scoreDom = document.querySelector("#score");
@@ -72,7 +87,9 @@ loader.load(
     gltf.scene.userData.name = "can";
     can = gltf.scene;
   },
-  undefined,
+  (xhr) => {
+    loaderIcon.style.display = "display";
+  },
   function (error) {
     console.error(error);
   }
@@ -89,7 +106,10 @@ loader.load(
     gltf.scene.userData.name = "star";
     star = gltf.scene;
   },
-  undefined,
+  (xhr) => {
+    loaderIcon.style.display = "display";
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
   function (error) {
     console.error(error);
   }
@@ -255,7 +275,6 @@ const moveplayer = (player) => {
   window.addEventListener("keydown", (e) => {
     if (pressed) return;
     if (e.key == " " ) {
-      console.log("enter")
       player.position.y += 2;
       const listener2 = new THREE.AudioListener();
       cube.add(listener2);
@@ -292,6 +311,7 @@ let delta = 0;
 let currentTime = 0;
 let gameSpeed = 2;
 // Start Animation Loop
+let totalScore;
 function animate() {
   // Update Camera
   camera.position.x = 0;
@@ -305,6 +325,8 @@ function animate() {
   currentTime = Math.floor(30 - elapsedTime);
   if (currentTime <= 0) {
     timerDom.innerHTML = "Game Over";
+    totalScore=score.toString()
+    gameOver()
   } else {
     timerDom.innerHTML = Math.floor(30 - elapsedTime);
   }
@@ -349,6 +371,12 @@ function animate() {
 }
 // Call Animation
 animate();
+// Gameover Function 
+const gameOver=()=>{
+  localStorage.setItem("scoreTotal", JSON.stringify({ scoreTotal: totalScore }));
+  window.location='end.html'
+}
+
 
 /*------------------------------------------------------------*/
 window.addEventListener("resize", () => {
@@ -366,10 +394,10 @@ window.addEventListener("load", (e) => {
   const audioLoader = new THREE.AudioLoader();
   soundon.addEventListener("click", () => {
     console.log("true");
-    audioLoader.load("/music.wav", function (buffer) {
+    audioLoader.load("/music-full.wav", function (buffer) {
       sound.setBuffer(buffer);
       sound.setLoop(true);
-      sound.setVolume(0.2);
+      sound.setVolume(0.9);
       if (sound.isPlaying) {
         sound.stop();
         soundon.innerHTML = "Music On 🎶";
@@ -380,3 +408,26 @@ window.addEventListener("load", (e) => {
     });
   });
 });
+
+
+THREE.DefaultLoadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+};
+
+THREE.DefaultLoadingManager.onLoad = function () {
+  document.querySelector(".loaderDiv").style.display = "none";
+};
+
+THREE.DefaultLoadingManager.onProgress = function (
+  url,
+  itemsLoaded,
+  itemsTotal
+) {
+  document.querySelector(".loaderDiv").style.display = "flex";
+
+};
+
+THREE.DefaultLoadingManager.onError = function (url) {
+  console.log("There was an error loading " + url);
+};
+
+export default score

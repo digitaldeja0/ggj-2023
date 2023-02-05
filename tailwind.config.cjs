@@ -2,13 +2,16 @@
 module.exports = {
   content: [
     "./index.html",
+    "./play.html",
+    "./end.html",
+    "./help.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
   },
   daisyui: {
-    themes: ["night"],
+    themes: ["halloween"],
   },
   plugins: [require("daisyui")],
   daisyui: {
@@ -19,7 +22,7 @@ module.exports = {
     logs: true,
     rtl: false,
     prefix: "",
-    darkTheme: "night",
+    darkTheme: "halloween",
   }
 }
 

@@ -4,36 +4,39 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="public/favicon.ico" type="image/x-icon">   
+    <link rel="shortcut icon" href="public/favicon.ico" type="image/x-icon" />
     <title>Rootbeer Riot Runner</title>
   </head>
-  <body>
+  <body class="">
     <!-- Header Start -->
-    <div class="navbar bg-neutral text-neutral-content fixed top-0  ">
-      <a class="btn btn-ghost normal-case text-xl ">Rootbeer Riot Runner</a>
-      <a id="soundOn" class="btn btn-accent mx-1 hover:cursor-pointer"> Music On 🎶</a>
+    <div class="navbar bg-neutral text-neutral-content fixed top-0 header">
+      <a href="/index.html" class="btn btn-ghost normal-case text-xl">Rootbeer Riot Runner</a>
+      <a id="soundOnHome" class="btn btn-accent mx-1 hover:cursor-pointer">
+        Music On 🎶</a
+      >
+      <a href="/help.html" class="btn btn-secondary mx-1 hover:cursor-pointer">
+        Rules/Help 💁🏽‍♂️</a
+      >
     </div>
     <!-- Header End -->
-    <!-- UI Start -->
-    <!-- UI End -->
-    <div class="card w-50 bg-base-100 shadow-xl flex flex-row fixed top-20 left-3">
-      <figure><img src="/rb-img.png" class="w-20" alt="rootbeer" /></figure>
-      <div class="card-body">
-        <p class="text-lg">Score:<span id="score" class="text-accent font-bold "> 1</span> </p>
-        <p class="text-lg">Time:<span id="timer" class="text-accent font-bold "> 1:00</span> </p>
+    <div class="gameIntro homeBG">
+      <div class="">
+        <div class="w-40 ">
+          <img src="/logo.png" />
+        </div>
       </div>
+      <p class="max-w-sm  text-center my-4 font-medium text-xl"> Adventure through “Soda Society” playing as a “Radical Rootbeer Can” on the run. Dodge obstacles, and collect caps and cubes, to become the carbonation king.  👑</p>
+      <a href="/play.html" class="btn gameIntroBtn">Start Game 🌻</a>
     </div>
-    <!-- Canvas End -->
+
     <!-- Footer Start -->
-    <footer class="footer footer-center p-4 bg-base-300 text-base-content fixed bottom-0 ">
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content fixed bottom-0 left-0">
       <div>
-        <p>Created By __________ For Global Game Jam 2023</p>
+        <p class="text-base">Created By Alex, David, Deja, and Tim </p>
+        </p><a class="link text-sm" href="https://www.buffalogamespace.com/">Created at The Buffalo Game Space For Global Game Jam 2023</a></p>
       </div>
     </footer>
-        <!-- Canvas Start -->
-        <canvas id="canvas" class="fixed top-0 left-0" ></canvas>
-        <!-- <canvas id="canvas"  ></canvas> -->
     <!-- Footer End -->
-    <script type="module" src="/main.js"></script>
+    <script type="module" src="/home.js"></script>
   </body>
 </html>
