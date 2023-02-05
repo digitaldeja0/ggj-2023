@@ -240,7 +240,6 @@ world.addBody(pbody);
 let hit = false;
 const smash = (item1, item2) => {
   if (item1.intersectsBox(item2) == true) {
-    cube.material.wireframe = false;
     score++;
     scoreDom.innerHTML = score;
     const listener1 = new THREE.AudioListener();
@@ -254,9 +253,7 @@ const smash = (item1, item2) => {
       sound1.play();
     });
     newLevel();
-  } else {
-    cube.material.wireframe = true;
-  }
+  } 
 };
 // Move Shapes
 let newX;
