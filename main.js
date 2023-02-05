@@ -6,7 +6,6 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
 import CannonDebugger from "cannon-es-debugger";
 import { Material } from "three";
-import { CharControls } from "./Controls";
 import Light from "./game/Lights";
 import camera from "./game/Camera";
 import Cube from "./game/Cube";
@@ -43,6 +42,7 @@ light3.dirL();
 // Add Player Cube and Helper
 const cubeInit = new Cube(scene, 1, 1, 1, "pink", true, true);
 const cube = cubeInit.meshBox();
+cube.position.set(-5, 0, 0);
 const cubebbInit = new BoundingBox(scene, cube, "blue");
 const cubebb = cubebbInit.helper();
 // Add Star Box and Helper
@@ -116,9 +116,9 @@ const GROUP1 = 1;
 const GROUP2 = 2;
 const GROUP3 = 4;
 // Create Ground Texture Three
-const groundTexture = new THREE.TextureLoader().load("/ground2.jpg");
-groundTexture.repeat.x = 10;
-groundTexture.repeat.y = 10;
+const groundTexture = new THREE.TextureLoader().load("/kitchen3.png");
+groundTexture.repeat.x = 1;
+groundTexture.repeat.y = 1;
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
 // Create Ground Three
@@ -152,7 +152,7 @@ const body1 = new CANNON.Body({
   collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
 });
 body1.addShape(shape1);
-body1.position.set(1, 2.2 , 0);
+body1.position.set(1, 2.2, 0);
 body1.velocity.set(-5, 0, 0);
 body1.linearDamping = 0;
 world.addBody(body1);
@@ -172,6 +172,30 @@ const platform = new THREE.Mesh(
   })
 );
 scene.add(platform);
+// Load Images Function
+const newImageGen = (file, x, z) => {
+  const imageTexture = new THREE.TextureLoader().load(file);
+  const image = new THREE.Mesh(
+    new THREE.BoxGeometry(3, 0.2, 2.5),
+    new THREE.MeshStandardMaterial({
+      metalness: 1,
+      roughness: 0.5,
+      map: imageTexture,
+    })
+  );
+  image.position.x = x;
+  image.position.z = z;
+  scene.add(image);
+};
+// Create Magnets
+
+newImageGen("/mag1.png", 0, 0);
+newImageGen("/mag2.png", 5, -3);
+newImageGen("/mag3.png", -6, 3);
+newImageGen("/mag4.png", -1, 5);
+newImageGen("/mag5.png", 6, 5);
+newImageGen("/mag6.png", -6, -4);
+
 // Create Platform Shape Cannon
 const shape3 = new CANNON.Box(new CANNON.Vec3(2, 0.5, 1));
 const pbody = new CANNON.Body({
@@ -184,46 +208,66 @@ pbody.addShape(shape3);
 pbody.position.set(0, 2.2, 0);
 world.addBody(pbody);
 // Check Collision Function Star and Can
+let hit = false;
 const smash = (item1, item2) => {
   if (item1.intersectsBox(item2) == true) {
     cube.material.wireframe = false;
     score++;
     scoreDom.innerHTML = score;
-    newLevel()
+    const listener1 = new THREE.AudioListener();
+    cube.add(listener1);
+    const sound1 = new THREE.Audio(listener1);
+    const audioLoader1 = new THREE.AudioLoader();
+    audioLoader1.load("/collect.mp3", function (buffer) {
+      sound1.setBuffer(buffer);
+      sound1.setLoop(false);
+      sound1.setVolume(0.9);
+      sound1.play();
+    });
+    newLevel();
   } else {
     cube.material.wireframe = true;
   }
 };
-// Move Shapes 
-let newX
-let newY
-let newZ
-const newLevel = ()=>{
-  newZ= Math.floor(Math.random() * (4 - -5) + -5)
-  newX = Math.floor(Math.random() * (4 - -5) + -5)
-  pbody.position.x = newX
-  pbody.position.z = newZ
-  body1.position.x = newX
-  body1.position.z = newZ
-  body.position.z=6
-  body.position.x=-2
-  console.log(body.position)
-  return 
-}
-
+// Move Shapes
+let newX;
+let newY;
+let newZ;
+const newLevel = () => {
+  newZ = Math.floor(Math.random() * (4 - -5) + -5);
+  newX = Math.floor(Math.random() * (4 - -5) + -5);
+  pbody.position.x = newX;
+  pbody.position.z = newZ;
+  body1.position.x = newX;
+  body1.position.z = newZ;
+  body.position.z = 6;
+  body.position.x = -2;
+  return;
+};
 // Create Score and Time Keeper
 let score = 0;
 scoreDom.innerHTML = score;
 let time = 60;
 timerDom.innerHTML = time;
 // Move Player Function
-let playerFlying = false
+var pressed = false;
 const moveplayer = (player) => {
   window.addEventListener("keydown", (e) => {
-    playerFlying=true
-    if (e.key == " " &&  playerFlying===true) {
-      player.position.y += 0.005
-      playerFlying = false
+    if (pressed) return;
+    if (e.key == " " ) {
+      console.log("enter")
+      player.position.y += 2;
+      const listener2 = new THREE.AudioListener();
+      cube.add(listener2);
+      const sound2 = new THREE.Audio(listener2);
+      const audioLoader2 = new THREE.AudioLoader();
+      audioLoader2.load("/jump.mp3", function (buffer) {
+        sound2.setBuffer(buffer);
+        sound2.setLoop(false);
+        sound2.setVolume(0.2);
+        sound2.play();
+      });
+      pressed = true;
     }
     if (e.key == "ArrowRight") {
       player.position.x += 0.001;
@@ -238,12 +282,10 @@ const moveplayer = (player) => {
       player.position.z += 0.001;
     }
   });
-  window.addEventListener("keyup", (e)=>{
-    playerFlying = false
-  })
+  window.addEventListener("keyup", (e) => {
+    pressed = false;
+  });
 };
-
-
 // Animation Loop
 let clock = new THREE.Clock();
 let delta = 0;
@@ -251,20 +293,20 @@ let currentTime = 0;
 let gameSpeed = 2;
 // Start Animation Loop
 function animate() {
-  // Update Camera 
-  camera.position.x=0
-  camera.position.y=6
-  camera.position.z=10
+  // Update Camera
+  camera.position.x = 0;
+  camera.position.y = 6;
+  camera.position.z = 10;
   camera.aspect = window.innerWidth / window.innerHeight;
   // Start Timer and Maintin Timer
   delta = clock.getDelta();
   const elapsedTime = clock.getElapsedTime();
   let timePassed = clock.startTime;
-  currentTime = Math.floor(60 - elapsedTime);
+  currentTime = Math.floor(30 - elapsedTime);
   if (currentTime <= 0) {
     timerDom.innerHTML = "Game Over";
   } else {
-    timerDom.innerHTML = Math.floor(60 - elapsedTime);
+    timerDom.innerHTML = Math.floor(30 - elapsedTime);
   }
   // Move Player Function Called
   if (can != undefined) {
@@ -280,6 +322,7 @@ function animate() {
   // Make Star follow star Cuube
   if (star != undefined) {
     star.position.copy(body1.position);
+    star.rotation.y += 0.05
   }
   // Cannon Game
   world.fixedStep();
@@ -329,10 +372,10 @@ window.addEventListener("load", (e) => {
       sound.setVolume(0.2);
       if (sound.isPlaying) {
         sound.stop();
-        soundon.innerHTML = "Sound On 🎶";
+        soundon.innerHTML = "Music On 🎶";
       } else {
         sound.play();
-        soundon.innerHTML = "Sound Off 🚫";
+        soundon.innerHTML = "Music Off 🚫";
       }
     });
   });
