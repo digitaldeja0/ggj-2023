@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 class Cube {
-  constructor(scene, w, h, d, color, wireframe) {
+  constructor(scene, w, h, d, color, wireframe, transparent, opacity) {
     this.scene = scene;
     this.w = w;
     this.h = h;
@@ -14,6 +14,8 @@ class Cube {
     this.purple = "#A084DC";
     this.green = "#658864";
     this.yellow = "#B7B78A";
+    this.transparent=transparent
+    this.opacity=opacity
     switch (this.color) {
       case "blue":
         this.ColorChoice = this.blue;
@@ -40,6 +42,8 @@ class Cube {
       new THREE.BoxGeometry(this.w, this.h, this.d),
       new THREE.MeshBasicMaterial({
         color: this.ColorChoice,
+        transparent:this.transparent,
+        opacity:this.opacity,
         wireframe: this.wireframe,
       })
     );

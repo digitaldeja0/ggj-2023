@@ -55,27 +55,37 @@ const light3 = new Light(scene, "#ffffff", 1, "10, 100, -100");
 light3.dirL();
 
 // Add Player Cube and Helper
-const cubeInit = new Cube(scene, 1, 1, 1, "pink", true, true);
-const cube = cubeInit.meshBox();
-cube.position.set(-5, 0, 0);
-const cubebbInit = new BoundingBox(scene, cube, "blue");
-const cubebb = cubebbInit.helper();
+// const cubeInit = new Cube(scene, 1, 1, 1, "pink", true, false, true,0);
+// const cube = cubeInit.meshBox();
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({
+    color: "#ffffff",
+    transparent:true,
+    opacity:0
+  })
+)
+cube.position.set(-10, 0, 0);
+scene.add(cube)
+const cubebb = new THREE.Box3().setFromObject(cube);
+// const helper = new THREE.Box3Helper(bb, this.ColorChoice);
+// const cubebbInit = new BoundingBox(scene, cube, "blue");
+// const cubebb = cubebbInit.helper();
 // Add Star Box and Helper
 const starCube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
   new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
-    wireframe: true,
+    color:"#ffffff",
+    transparent:true, 
+    opacity:0
   })
 );
 scene.add(starCube);
 const starCubebb = new THREE.Box3().setFromObject(starCube);
-const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00);
-scene.add(helper2);
 // Load Player Model
 const loader = new GLTFLoader();
 let can;
-let itemSize = 1;
+let itemSize = 17;
 loader.load(
   "can.glb",
   function (gltf) {
@@ -97,18 +107,17 @@ loader.load(
 // Load Star
 let star;
 loader.load(
-  "star.glb",
+  "cap1.glb",
   function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.x = 10;
-    gltf.scene.scale.y = 10;
-    gltf.scene.scale.z = 10;
+    gltf.scene.scale.x = 2;
+    gltf.scene.scale.y = 2;
+    gltf.scene.scale.z = 2;
     gltf.scene.userData.name = "star";
     star = gltf.scene;
   },
   (xhr) => {
-    loaderIcon.style.display = "display";
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+    loaderIcon.style.display = "flex";
   },
   function (error) {
     console.error(error);
@@ -349,7 +358,7 @@ function animate() {
   // Cannon Game
   world.fixedStep();
   // world.step(1 / 60, deltaTime, 3);
-  cannonDebugger.update();
+  // cannonDebugger.update();
   cube.position.copy(body.position);
   cube.quaternion.copy(body.quaternion);
   starCube.position.copy(body1.position);
