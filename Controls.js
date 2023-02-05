@@ -25,7 +25,7 @@ export class CharControls {
 
   update(delta, keyPressed) {
     // const dirArr = ["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"];
-    const dirArr = [ "arrowup", "arrowdown", "arrowleft", "arrowright"," "];
+    const dirArr = [ "arrowup", "arrowdown", "arrowleft", "arrowright"];
 
     let checkMe = (key) => keyPressed[key] == true;
     const directionPressed = dirArr.some(checkMe);
@@ -103,7 +103,7 @@ export class CharControls {
     let D = "arrowright";
     let W = "arrowup";
     let S = "arrowdown";
-    let space = " "
+  
 
 
     var directionOffset = 0;
@@ -127,10 +127,7 @@ export class CharControls {
       directionOffset = Math.PI / 2;
     } else if (keyPressed[A]) {
       directionOffset = -Math.PI / 2;
-    } else if (keyPressed[space]){
-        directionOffset = 0
-        // console.log("hi")
-    }
+    } 
 
  
 
