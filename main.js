@@ -6,6 +6,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
 import CannonDebugger from "cannon-es-debugger";
 import { Material } from "three";
+import { CharControls } from "./Controls";
 
 // Score and Timer
 const timerDom = document.querySelector("#timer");
@@ -26,7 +27,7 @@ canvas.height = size.height;
 // Scene, Camere, Renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-  59,
+  75,
   size.width / size.height,
   0.1,
   100
@@ -38,16 +39,22 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 // Light
-const light1 = new THREE.AmbientLight(0x404040); // soft white light
+const light1 = new THREE.AmbientLight(0xffffff,1); // soft white light
 scene.add(light1);
-const light2 = new THREE.PointLight(0xffffff, 1, 100);
-light2.position.set(0, 2, 6);
-scene.add(light2);
+const light3 = new THREE.DirectionalLight(0xffffff,1); // soft white light
+light3.position.set(0, 20, 0);
+scene.add(light3);
+
+const spotLight = new THREE.SpotLight( 0xffffff,1 );
+spotLight.position.set( 10, 30, 0 );
+scene.add( spotLight );
+
+
 
 // Update Camera
 camera.rotation.x = -0.2;
-camera.position.y = 3;
-camera.position.z = 11;
+camera.position.y = 1;
+camera.position.z = 5;
 
 // Add Cube
 
@@ -62,7 +69,7 @@ scene.add(cube);
 
 const cubebb = new THREE.Box3().setFromObject(cube);
 const helper = new THREE.Box3Helper(cubebb, 0xffff00);
-scene.add(helper);
+// scene.add(helper);
 
 // Add Star Box
 const starCube = new THREE.Mesh(
@@ -76,16 +83,17 @@ scene.add(starCube);
 
 const starCubebb = new THREE.Box3().setFromObject(starCube);
 const helper2 = new THREE.Box3Helper(starCubebb, 0xffff00);
-scene.add(helper2);
+// scene.add(helper2);
 
 const loader = new GLTFLoader();
 let can;
 let star;
-let itemSize = 15;
+let itemSize = 1;
 let girl;
+let characterControls;
 
 loader.load(
-  "can-demo.glb",
+  "can.glb",
   function (gltf) {
     scene.add(gltf.scene);
     gltf.scene.scale.x = itemSize;
@@ -94,6 +102,7 @@ loader.load(
     gltf.scene.position.copy(cube.position);
     gltf.scene.userData.name = "can";
     can = gltf.scene;
+    characterControls = new CharControls(can, camera, controls, body, cube)
   },
   undefined,
   function (error) {
@@ -129,6 +138,21 @@ loader.load(
   }
 );
 
+// Controls
+
+const keyPressed = {};
+
+document.addEventListener("keydown", (e) => {
+  keyPressed[e.key.toLowerCase()] = true;
+  // console.log(keyPressed);
+});
+document.addEventListener("keyup", (e) => {
+  keyPressed[e.key.toLowerCase()] = false;
+  // console.log(keyPressed);
+});
+
+
+
 // Cannon Starter
 
 const world = new CANNON.World({
@@ -154,24 +178,39 @@ const GROUP1 = 1;
 const GROUP2 = 2;
 const GROUP3 = 4;
 
-const groundTexture = new THREE.TextureLoader().load("/ground2.jpg");
-groundTexture.repeat.x = 25;
-groundTexture.repeat.y = 25;
+const groundTexture = new THREE.TextureLoader().load("/kitchen.png");
+groundTexture.repeat.x = 1;
+groundTexture.repeat.y = 1;
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
 
-const platformTetxure = new THREE.TextureLoader().load("/cloth.png");
-platformTetxure.repeat.x = 2;
-platformTetxure.repeat.y = 1;
+const platformTetxure = new THREE.TextureLoader().load("/metal.png");
+platformTetxure.repeat.x = 5;
+platformTetxure.repeat.y = 5;
 platformTetxure.wrapS = THREE.RepeatWrapping;
 platformTetxure.wrapT = THREE.RepeatWrapping;
+const plane2 = new THREE.Mesh(
+  new THREE.PlaneGeometry(25,25),
+  new THREE.MeshBasicMaterial({ map:platformTetxure })
+);
+plane2.position.x = 0
+plane2.position.z = -2
+// scene.add(plane2);
+
+
 
 const plane = new THREE.Mesh(
-  new THREE.PlaneGeometry(50, 50),
-  new THREE.MeshBasicMaterial({ map: groundTexture })
+  new THREE.PlaneGeometry(25,25),
+  new THREE.MeshStandardMaterial({
+    metalness: 1,   // between 0 and 1
+    roughness: 0.5, // between 0 and 1
+    map: groundTexture 
+} )
 );
 plane.rotation.x = Math.PI / 2;
-scene.add(plane);
+// scene.add(plane);
+
+
 
 const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
 const body = new CANNON.Body({
@@ -180,7 +219,7 @@ const body = new CANNON.Body({
   collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
 });
 body.addShape(shape);
-body.position.set(-1, 0, 0);
+body.position.set(0, 0, 0);
 body.velocity.set(0, 0, 0);
 body.linearDamping = 0;
 world.addBody(body);
@@ -272,9 +311,8 @@ function animate() {
   }
   requestAnimationFrame(animate);
 
-  if (girl != undefined) {
-    girl.position.x += 0.005 * gameSpeed;
-  }
+
+
   platformMovement(pbody);
   if (star != undefined) {
     dancingStar(star, body1);
@@ -292,7 +330,7 @@ function animate() {
   // Cannon Game
   world.fixedStep();
   // world.step(1 / 60, deltaTime, 3);
-  cannonDebugger.update();
+  // cannonDebugger.update();
   cube.position.copy(body.position);
   cube.quaternion.copy(body.quaternion);
   starCube.position.copy(body1.position);
@@ -305,6 +343,11 @@ function animate() {
     .applyMatrix4(starCube.matrixWorld);
   platform.position.copy(pbody.position);
   platform.quaternion.copy(pbody.quaternion);
+  if(can !=undefined ||  !(cube.position.y > 0)){
+    if (characterControls != undefined) {
+      characterControls.update(delta, keyPressed);
+    }
+  }
   // Cannon Game End
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -323,21 +366,35 @@ window.addEventListener("resize", () => {
 
 window.addEventListener("keydown", (e) => {
   if (e.key == " ") {
-    body.position.y += 4;
+    body.position.y += 5;
+    if(body.position.y>5){
+      body.position.y=4.5
+    }
     // can.position.y+=3
-  }
-  if (e.key == "ArrowRight") {
-    body.position.x += 1;
-    // can.position.y+=3
-  }
-  if (e.key == "ArrowLeft") {
-    body.position.x -= 1;
-    // can.position.y+=3
-  }
-  if (e.key == "ArrowDown") {
-    // body.position.x-=0.01
-  }
-});
+  }})
+
+// window.addEventListener("keydown", (e) => {
+//   if (e.key == " ") {
+//     body.position.y += 4;
+//     // can.position.y+=3
+//   }
+//   if (e.key == "ArrowRight") {
+//     body.position.x += 1;
+//     // can.position.y+=3
+//   }
+//   if (e.key == "ArrowLeft") {
+//     body.position.x -= 1;
+//     // can.position.y+=3
+//   }
+//   if (e.key == "ArrowDown") {
+//     body.position.z += 0.2;
+//   }
+//   if (e.key == "ArrowUp") {
+//     body.position.z -= 0.2;
+//   }
+// });
+
+
 
 let soundon = document.querySelector("#soundOn");
 let soundItem;
@@ -348,30 +405,25 @@ window.addEventListener("load", (e) => {
   const sound = new THREE.Audio(listener);
   const audioLoader = new THREE.AudioLoader();
   soundon.addEventListener("click", () => {
-    console.log("true")
+    console.log("true");
     audioLoader.load("/music.wav", function (buffer) {
       sound.setBuffer(buffer);
       sound.setLoop(true);
       sound.setVolume(0.2);
-      if(sound.isPlaying){
-        sound.stop()
-        soundon.innerHTML="Sound On 🎶"
-      }else{
-        sound.play()
-        soundon.innerHTML="Sound Off 🚫"
+      if (sound.isPlaying) {
+        sound.stop();
+        soundon.innerHTML = "Sound On 🎶";
+      } else {
+        sound.play();
+        soundon.innerHTML = "Sound Off 🚫";
       }
-      
     });
-
-
-
   });
 });
 
 
-
-// GUI
-const gui = new dat.GUI();
-gui.add(camera.position, "x").name("cameraPX");
-gui.add(camera.position, "y").name("cameraPY");
-gui.add(camera.position, "z").name("cameraPZ");
+// controls.maxPolarAngle = Math.PI * 0.49;
+// controls.minPolarAngle = Math.PI * 0.4;
+// controls.maxDistance = Math.PI * 0.1;
+// controls.minDistance = Math.PI * 5;
+// controls.maxZoom = Math.PI * 5;
