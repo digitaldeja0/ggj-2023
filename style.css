@@ -91,7 +91,7 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--dark-bg);
+  background-color: black;
   position: fixed;
   top: 0;
   bottom: 0;
