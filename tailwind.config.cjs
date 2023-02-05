@@ -5,6 +5,7 @@ module.exports = {
     "./play.html",
     "./end.html",
     "./help.html",
+    "./src/**/*.{html}",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
