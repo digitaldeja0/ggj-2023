@@ -181,7 +181,7 @@ const body1 = new CANNON.Body({
   collisionFilterMask: GROUP1, // It can only collide with group 1 (the sphere)
 });
 body1.addShape(shape1);
-body1.position.set(1, 2.2, 0);
+body1.position.set(1, 1, 0);
 body1.velocity.set(-5, 0, 0);
 body1.linearDamping = 0;
 world.addBody(body1);
@@ -193,7 +193,7 @@ platTexture.wrapS = THREE.RepeatWrapping;
 platTexture.wrapT = THREE.RepeatWrapping;
 // Create Game Platform Three
 const platform = new THREE.Mesh(
-  new THREE.BoxGeometry(3, 0.5, 3),
+  new THREE.BoxGeometry(3, 0.2, 3),
   new THREE.MeshStandardMaterial({
     metalness: 1,
     roughness: 0.5,
@@ -234,7 +234,7 @@ const pbody = new CANNON.Body({
   collisionFilterMask: GROUP2 | GROUP3,
 });
 pbody.addShape(shape3);
-pbody.position.set(0, 2.2, 0);
+pbody.position.set(0, 0.5, 0);
 world.addBody(pbody);
 // Check Collision Function Star and Can
 let hit = false;
