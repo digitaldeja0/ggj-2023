@@ -341,6 +341,9 @@ let currentTime = 0;
 let gameSpeed = 2;
 // Start Animation Loop
 let totalScore;
+
+let over = false 
+
 function animate() {
   // Update Camera
   camera.position.x = 0;
@@ -403,10 +406,15 @@ function animate() {
   renderer.render(scene, camera);
 }
 // Call Animation
-animate();
+
+if(!over){
+  animate();
+}
+
 // Gameover Function 
 const gameOver=()=>{
   console.log(score)
+  over = true
   if(score >=20){
     localStorage.setItem("status", JSON.stringify({ status: "You Win 💖" }));
   }else{
