@@ -414,6 +414,7 @@ function animate() {
 
 // Gameover Function 
 const gameOver=()=>{
+  cancelAnimationFrame(animate)
 
   if(score >=20){
     localStorage.setItem("status", JSON.stringify({ status: "You Win 💖" }));
