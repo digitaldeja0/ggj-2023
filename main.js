@@ -414,8 +414,7 @@ function animate() {
 
 // Gameover Function 
 const gameOver=()=>{
-  cancelAnimationFrame(animate)
-
+  // cancelAnimationFrame(animate)
   if(score >=20){
     localStorage.setItem("status", JSON.stringify({ status: "You Win 💖" }));
   }else{
@@ -425,7 +424,6 @@ const gameOver=()=>{
   localStorage.setItem("scoreTotal", JSON.stringify({ scoreTotal: totalScore }));
   window.location='end.html'
 }
-
 
 /*------------------------------------------------------------*/
 window.addEventListener("resize", () => {
