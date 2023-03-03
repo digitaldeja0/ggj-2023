@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 class Cube {
-  constructor(scene, w, h, d, color, wireframe, transparent, opacity) {
+  constructor(scene, w, h, d, color, wireframe, transparent, opacity,x,y,z) {
     this.scene = scene;
     this.w = w;
     this.h = h;
@@ -35,6 +35,9 @@ class Cube {
       default:
         this.ColorChoice = this.blue;
     }
+    this.x = x
+    this.y = y
+    this.z = z   
   }
 
   meshBox() {
@@ -47,9 +50,13 @@ class Cube {
         wireframe: this.wireframe,
       })
     );
+    cube.position.x = this.x
+    cube.position.y = this.y 
+    cube.position.z = this.z
     this.scene.add(cube);
     return cube
   }
+  
 }
 
 export default Cube;

@@ -55,10 +55,9 @@ const light3 = new Light(scene, "#ffffff", 1, "10, 100, -100");
 light3.dirL();
 
 // Add Player Cube and Helper
-// const cubeInit = new Cube(scene, 1, 1, 1, "pink", true, false, true,0);
-// const cube = cubeInit.meshBox();
+
 const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.BoxGeometry(1, 2, 1),
   new THREE.MeshBasicMaterial({
     color: "#ffffff",
     transparent:true,
@@ -68,9 +67,7 @@ const cube = new THREE.Mesh(
 cube.position.set(-10, 0, 0);
 scene.add(cube)
 const cubebb = new THREE.Box3().setFromObject(cube);
-// const helper = new THREE.Box3Helper(bb, this.ColorChoice);
-// const cubebbInit = new BoundingBox(scene, cube, "blue");
-// const cubebb = cubebbInit.helper();
+
 // Add Star Box and Helper
 const starCube = new THREE.Mesh(
   new THREE.BoxGeometry(1, 1, 1),
@@ -80,6 +77,9 @@ const starCube = new THREE.Mesh(
     opacity:0
   })
 );
+
+
+
 scene.add(starCube);
 const starCubebb = new THREE.Box3().setFromObject(starCube);
 // Load Player Model
@@ -200,7 +200,15 @@ const platform = new THREE.Mesh(
     map: platTexture,
   })
 );
-scene.add(platform);
+// scene.add(platform);
+
+
+
+
+
+
+
+
 // Load Images Function
 const newImageGen = (file, x, z) => {
   const imageTexture = new THREE.TextureLoader().load(file);
@@ -235,7 +243,22 @@ const pbody = new CANNON.Body({
 });
 pbody.addShape(shape3);
 pbody.position.set(0, 0.5, 0);
-world.addBody(pbody);
+// world.addBody(pbody);
+
+const shape4 = new CANNON.Box(new CANNON.Vec3(0.5, 2, 0.9));
+const newCan = new CANNON.Body({
+  type: CANNON.Body.STATIC,
+  mass: 0,
+  collisionFilterGroup: GROUP1,
+  collisionFilterMask: GROUP2 | GROUP3,
+});
+newCan.addShape(shape4);
+newCan.position.set(0, 0.5, 0);
+world.addBody(newCan);
+
+
+
+
 // Check Collision Function Star and Can
 let hit = false;
 const smash = (item1, item2) => {
@@ -281,7 +304,7 @@ const moveplayer = (player) => {
   window.addEventListener("keydown", (e) => {
     if (pressed) return;
     if (e.key == " " ) {
-      player.position.y += 2;
+      // player.position.y += 2;
       const listener2 = new THREE.AudioListener();
       cube.add(listener2);
       const sound2 = new THREE.Audio(listener2);
@@ -328,36 +351,40 @@ function animate() {
   delta = clock.getDelta();
   const elapsedTime = clock.getElapsedTime();
   let timePassed = clock.startTime;
-  currentTime = Math.floor(30 - elapsedTime);
+  currentTime = Math.floor(15 - elapsedTime);
   if (currentTime <= 0) {
     timerDom.innerHTML = "Game Over";
     totalScore=score.toString()
     gameOver()
   } else {
-    timerDom.innerHTML = Math.floor(30 - elapsedTime);
+    timerDom.innerHTML = Math.floor(15 - elapsedTime);
   }
   // Move Player Function Called
   if (can != undefined) {
-    moveplayer(body);
+    moveplayer(newCan);
   }
   // Collsion Check Funciton Called
   smash(cubebb, starCubebb);
   // Make Can Follow Cubes
   if (can != undefined) {
-    can.position.copy(body.position);
-    can.position.y = body.position.y;
+    // can.position.copy(body.position);
+    // can.position.y = body.position.y;
+    can.position.copy(  newCan.position);
+    can.position.y =   newCan.position.y;
+  
   }
   // Make Star follow star Cuube
   if (star != undefined) {
     star.position.copy(body1.position);
     star.rotation.y += 0.05
+    star.position.y =1
   }
   // Cannon Game
   world.fixedStep();
   // world.step(1 / 60, deltaTime, 3);
   // cannonDebugger.update();
-  cube.position.copy(body.position);
-  cube.quaternion.copy(body.quaternion);
+  cube.position.copy(  newCan.position);
+  cube.quaternion.copy(  newCan.quaternion);
   starCube.position.copy(body1.position);
   starCube.quaternion.copy(body1.quaternion);
   plane.position.copy(groundBody.position);
@@ -366,8 +393,8 @@ function animate() {
   starCubebb
     .copy(starCube.geometry.boundingBox)
     .applyMatrix4(starCube.matrixWorld);
-  platform.position.copy(pbody.position);
-  platform.quaternion.copy(pbody.quaternion);
+  // platform.position.copy(pbody.position);
+  // platform.quaternion.copy(pbody.quaternion);
   // Cannon Game End
   requestAnimationFrame(animate);
   camera.updateProjectionMatrix();
@@ -379,6 +406,13 @@ function animate() {
 animate();
 // Gameover Function 
 const gameOver=()=>{
+  console.log(score)
+  if(score >=20){
+    localStorage.setItem("status", JSON.stringify({ status: "You Win 💖" }));
+  }else{
+    localStorage.setItem("status", JSON.stringify({ status: "You Lose 😭" }));
+
+  }
   localStorage.setItem("scoreTotal", JSON.stringify({ scoreTotal: totalScore }));
   window.location='end.html'
 }
